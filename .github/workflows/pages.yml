@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
       - name: Finalize
         env:
           AF3400: ${{ secrets.AF3400 }}
@@ -33,15 +34,17 @@ jobs:
                   s = p.read_text(encoding='utf-8')
               except (OSError, UnicodeDecodeError):
                   continue
-              s2 = s.replace('<!-- f8f235f42e6730d2 -->', gm)
-              s2 = s2.replace('<!-- 4dc903a8d7864defdd -->', bm)
+              s2 = s
+              if gm:
+                  s2 = s2.replace('<!-- cbcbffd80fcefe7dbf14bda72f3dba -->', gm)
+              if bm:
+                  s2 = s2.replace('<!-- 4ca10a4fb8b5517b0b36cdcab5 -->', bm)
               if s2 != s:
                   p.write_text(s2, encoding='utf-8')
                   count += 1
-          if count == 0:
+          if count == 0 and (gm or bm):
               sys.exit(1)
           "
-      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
